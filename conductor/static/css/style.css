@@ -233,6 +233,7 @@ html, body {
     display: grid;
     grid-template-columns: 1fr 1fr;
     overflow: hidden;
+    min-height: 0;   /* allow grid to shrink in parent grid */
 }
 
 /* ============================================================
@@ -242,14 +243,17 @@ html, body {
 .chat-panel {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    min-height: 0;          /* critical: allows flex children to scroll in grid */
+    overflow: hidden;        /* contain the flex layout */
     background: var(--bg-white);
     border-right: 1px solid var(--border-light);
 }
 
 .messages-container {
-    flex: 1;
+    flex: 1 1 0;             /* grow, shrink, zero basis — forces scroll */
+    min-height: 0;           /* allow shrinking below content height */
     overflow-y: auto;
+    -webkit-overflow-scrolling: touch;  /* smooth iOS scrolling */
     padding: 1rem;
     scroll-behavior: smooth;
 }
@@ -509,11 +513,15 @@ html, body {
 @media (max-width: 768px) {
     .content-area {
         grid-template-columns: 1fr;
-        grid-template-rows: 35vh 1fr;
+        grid-template-rows: 1fr 25vh;  /* chat first, map smaller at bottom */
     }
 
     .chat-panel {
         border-right: none;
+        order: -1;                      /* chat on top */
+    }
+
+    .map-panel {
         border-top: 1px solid var(--border-light);
     }
 
@@ -527,6 +535,29 @@ html, body {
 
     .message__bubble {
         max-width: 90%;
+        font-size: 0.875rem;
+    }
+
+    /* When input is focused (keyboard open), hide map to give full space */
+    .content-area.keyboard-open .map-panel {
+        display: none;
+    }
+
+    .content-area.keyboard-open {
+        grid-template-rows: 1fr;
+    }
+
+    .suggestions {
+        padding: 0.25rem 0.75rem;
+    }
+
+    .suggestion-chip {
+        font-size: 0.75rem;
+        padding: 0.3rem 0.65rem;
+    }
+
+    .chat-input-area {
+        padding: 0.5rem 0.75rem;
     }
 }
 

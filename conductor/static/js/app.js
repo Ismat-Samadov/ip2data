@@ -450,5 +450,25 @@
                 chatForm.dispatchEvent(new Event("submit"));
             }
         });
+
+        // Mobile: hide map when keyboard opens, restore when it closes
+        if (window.innerWidth <= 768) {
+            chatInput.addEventListener("focus", () => {
+                contentArea.classList.add("keyboard-open");
+                resizeMap();
+                scrollToBottom();
+            });
+            chatInput.addEventListener("blur", () => {
+                contentArea.classList.remove("keyboard-open");
+                resizeMap();
+            });
+
+            // Also handle visualViewport resize (more reliable keyboard detection)
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener("resize", () => {
+                    scrollToBottom();
+                });
+            }
+        }
     });
 })();
