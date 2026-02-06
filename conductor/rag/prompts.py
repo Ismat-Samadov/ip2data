@@ -36,13 +36,13 @@ Yalnız JSON cavab ver, başqa heç nə yazma.
 
 Nümunə:
 İstifadəçi: "Gənclik metrosuna hansı avtobus gedir?"
-{"intent": "route_find", "entities": {"origin": "user_location", "destination": "gənclik metrosu"}}
+{{"intent": "route_find", "entities": {{"origin": "user_location", "destination": "gənclik metrosu"}}}}
 
 İstifadəçi: "65 nömrəli avtobus harada dayanır?"
-{"intent": "bus_info", "entities": {"bus_number": "65"}}
+{{"intent": "bus_info", "entities": {{"bus_number": "65"}}}}
 
 İstifadəçi: "Buradan 28 Maya necə gedə bilərəm?"
-{"intent": "route_find", "entities": {"origin": "user_location", "destination": "28 may"}}
+{{"intent": "route_find", "entities": {{"origin": "user_location", "destination": "28 may"}}}}
 
 İstifadəçi mesajı: {message}
 """

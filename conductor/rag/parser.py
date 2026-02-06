@@ -1,6 +1,7 @@
 """Intent classification and entity extraction using Gemini."""
 
 import json
+import httpx
 from google import genai
 from conductor.config import GEMINI_API_KEY, MODEL_NAME
 from conductor.rag.prompts import INTENT_PARSE_PROMPT
@@ -12,7 +13,10 @@ _client = None
 def _get_client():
     global _client
     if _client is None:
-        _client = genai.Client(api_key=GEMINI_API_KEY)
+        _client = genai.Client(
+            api_key=GEMINI_API_KEY,
+            http_options={"api_version": "v1beta"},
+        )
     return _client
 
 

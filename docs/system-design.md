@@ -73,11 +73,11 @@ Each `routes[]` entry contains:
 
 ### 3.1 Technology
 
-**Neo4j** — native graph database with Cypher query language. Chosen for:
+**Neo4j Aura** (cloud) — native graph database with Cypher query language. Chosen for:
 - Natural fit for transportation network topology
 - Efficient shortest-path and traversal algorithms (Dijkstra, A*)
 - Built-in spatial indexing for geo queries
-- Mature Python driver (`neo4j` package)
+- Connected via **HTTP Query API v2** (`/db/neo4j/query/v2`) over HTTPS port 443 to bypass corporate firewall restrictions on Bolt port 7687
 
 ### 3.2 Node Types
 
@@ -558,24 +558,23 @@ Direct route found:
 
 | Layer | Technology | Purpose |
 |---|---|---|
-| Graph DB | **Neo4j** (Community/AuraDB) | Store transportation network |
-| Backend | **Python 3.11+** | API server, graph queries, LLM orchestration |
-| Web Framework | **FastAPI** | REST/WebSocket API |
-| LLM | **Claude API** (claude-sonnet-4-5-20250929) | Query parsing, response generation |
-| Embeddings | **Text embeddings** (optional) | Stop name similarity for fuzzy matching |
+| Graph DB | **Neo4j Aura** (cloud, HTTP API v2) | Store transportation network |
+| Backend | **Python 3.14** | API server, graph queries, LLM orchestration |
+| Web Framework | **FastAPI** | REST API |
+| LLM | **Google Gemini** (gemini-2.5-flash) | Query parsing, response generation |
+| Neo4j Client | **HTTP Query API v2** (requests) | Cypher over HTTPS (port 443) |
 | Frontend | **Next.js** or **plain HTML/JS** | Chat UI with map |
 | Map | **Mapbox GL** or **Leaflet** | Route visualization |
-| Cache | **Redis** (optional) | Session state, frequent query caching |
 | Data Pipeline | **Python scripts** | Fetch data from AYNA API, build graph |
 
 ### Python Dependencies
 
 ```
-neo4j              # Neo4j driver
+neo4j              # Neo4j driver (used only for local dev; HTTP API used in prod)
 fastapi            # Web framework
 uvicorn            # ASGI server
-anthropic          # Claude API client
-requests           # HTTP client (data fetching)
+google-genai       # Google Gemini API client
+requests           # HTTP client (data fetching + Neo4j HTTP API)
 pydantic           # Data validation
 python-dotenv      # Environment variables
 ```
@@ -616,19 +615,19 @@ WS /ws/chat/{sessionId}
 
 ---
 
-## 11. Graph Statistics (Expected)
+## 11. Graph Statistics (Actual)
 
 | Metric | Count |
 |---|---|
-| Stop nodes | ~3,841 |
-| Bus nodes | ~208 |
-| Carrier nodes | ~25-30 |
-| Zone nodes | ~5-6 |
-| HAS_STOP relationships | ~15,000-20,000 (both directions) |
-| NEXT_STOP relationships | ~15,000-20,000 |
-| TRANSFER relationships | ~5,000-10,000 (estimated, depends on 300m threshold) |
-| OPERATED_BY relationships | ~208 |
-| IN_ZONE relationships | ~208 |
+| Stop nodes | 3,456 |
+| Bus nodes | 208 |
+| Carrier nodes | 43 |
+| Zone nodes | 7 |
+| HAS_STOP relationships | 11,786 |
+| NEXT_STOP relationships | 11,357 |
+| TRANSFER relationships | 7,492 (3,746 bidirectional pairs, 300m threshold) |
+| OPERATED_BY relationships | 208 |
+| IN_ZONE relationships | 208 |
 
 ---
 
