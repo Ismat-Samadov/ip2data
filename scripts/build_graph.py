@@ -30,6 +30,27 @@ def normalize_name(name: str) -> str:
     return name.strip().lower()
 
 
+def safe_float(val, default=0.0) -> float:
+    """Parse float from potentially dirty data (e.g., '40,578,409' → 40.578409)."""
+    if val is None:
+        return default
+    if isinstance(val, (int, float)):
+        return float(val)
+    s = str(val).strip()
+    if not s:
+        return default
+    # If string has commas, check if it's a malformed coordinate (e.g., "40,578,409")
+    if "," in s and "." not in s:
+        # Likely "40,578409" or "40,578,409" — first part is integer, rest is decimal
+        parts = s.split(",")
+        if len(parts) >= 2:
+            s = parts[0] + "." + "".join(parts[1:])
+    try:
+        return float(s)
+    except ValueError:
+        return default
+
+
 # ──────────────────────────────────────────────
 # Phase 0: Constraints & Indexes
 # ──────────────────────────────────────────────
@@ -82,8 +103,8 @@ def ingest_stops(client: Neo4jClient, bus_details: list):
                     "code": stop.get("code", ""),
                     "name": stop.get("name", ""),
                     "nameNormalized": normalize_name(stop.get("name", "")),
-                    "latitude": float(stop.get("latitude", 0)),
-                    "longitude": float(stop.get("longitude", 0)),
+                    "latitude": safe_float(stop.get("latitude")),
+                    "longitude": safe_float(stop.get("longitude")),
                     "isTransportHub": stop.get("isTransportHub", False),
                 }
 
