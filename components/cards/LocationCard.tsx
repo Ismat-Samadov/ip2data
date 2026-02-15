@@ -1,88 +1,86 @@
 "use client";
 
-import { MapPin, Clock, Map, Compass } from "lucide-react";
+import { useEffect, useState } from "react";
+import { MapPin, Clock, Compass, Globe2 } from "lucide-react";
 import { GeoData } from "@/lib/types";
 
-interface Props {
-  geo: GeoData;
-}
+interface Props { geo: GeoData; }
 
 export default function LocationCard({ geo }: Props) {
-  const localTime = new Date().toLocaleTimeString("en-US", {
-    timeZone: geo.timezone,
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: true,
-  });
+  const [time, setTime] = useState(() =>
+    new Date().toLocaleTimeString("en-US", {
+      timeZone: geo.timezone, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true,
+    })
+  );
+
+  // Live clock — ticks every second
+  useEffect(() => {
+    const id = setInterval(() => {
+      setTime(new Date().toLocaleTimeString("en-US", {
+        timeZone: geo.timezone, hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: true,
+      }));
+    }, 1000);
+    return () => clearInterval(id);
+  }, [geo.timezone]);
+
   const localDate = new Date().toLocaleDateString("en-US", {
-    timeZone: geo.timezone,
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
+    timeZone: geo.timezone, weekday: "long", month: "short", day: "numeric",
   });
 
   return (
-    <div className="glass glass-hover rounded-2xl p-5 glow-purple">
-      <div className="flex items-center gap-2 mb-4">
-        <div className="w-8 h-8 rounded-lg bg-purple-500/20 flex items-center justify-center">
+    <div className="glass card-hover card-accent-purple glow-purple rounded-2xl p-5 h-full">
+      {/* Header */}
+      <div className="flex items-center gap-2.5 mb-5">
+        <div className="card-icon bg-purple-500/15">
           <MapPin className="w-4 h-4 text-purple-400" />
         </div>
-        <h2 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">
+        <span className="text-xs font-semibold text-slate-400 uppercase tracking-widest">
           Location
-        </h2>
+        </span>
       </div>
 
-      {/* City + Country Hero */}
-      <div className="mb-4">
-        <div className="text-2xl font-bold text-white">{geo.city}</div>
-        <div className="text-sm text-slate-400">
+      {/* City hero */}
+      <div className="mb-5 p-3.5 rounded-xl bg-purple-500/8 border border-purple-500/15">
+        <div className="text-2xl font-bold text-white leading-tight">{geo.city}</div>
+        <div className="text-sm text-slate-400 mt-0.5">
           {geo.regionName}, {geo.country}
         </div>
+        {/* Live clock */}
+        <div className="mt-3 flex items-center gap-2">
+          <Clock className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+          <span className="font-mono text-base font-semibold text-purple-300 tabular-nums">
+            {time}
+          </span>
+        </div>
+        <div className="text-xs text-slate-500 mt-0.5 pl-[22px]">{localDate}</div>
       </div>
 
-      <div className="space-y-2.5">
-        <div className="flex items-center justify-between">
+      {/* Detail rows */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-xs text-slate-400">Local Time</span>
+            <Compass className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-xs text-slate-500">Coordinates</span>
           </div>
-          <span className="text-sm font-semibold text-purple-300 font-mono">{localTime}</span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Map className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-xs text-slate-400">Date</span>
-          </div>
-          <span className="text-xs text-slate-300">{localDate}</span>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Compass className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-xs text-slate-400">Coordinates</span>
-          </div>
-          <span className="text-xs font-mono text-slate-300">
+          <span className="font-mono text-xs text-slate-300">
             {geo.lat.toFixed(4)}, {geo.lon.toFixed(4)}
           </span>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <Clock className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-xs text-slate-400">Timezone</span>
+            <Globe2 className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-xs text-slate-500">Timezone</span>
           </div>
-          <span className="text-xs text-slate-300">{geo.timezone}</span>
+          <span className="text-xs text-slate-300 text-right">{geo.timezone}</span>
         </div>
 
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2">
-            <MapPin className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-xs text-slate-400">ZIP Code</span>
+            <MapPin className="w-3.5 h-3.5 text-slate-600" />
+            <span className="text-xs text-slate-500">ZIP / Postal</span>
           </div>
-          <span className="text-xs font-mono text-slate-300">{geo.zip || "—"}</span>
+          <span className="font-mono text-xs text-slate-300">{geo.zip || "—"}</span>
         </div>
       </div>
     </div>

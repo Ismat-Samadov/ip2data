@@ -10,19 +10,21 @@ A real-time dashboard that takes your public IP address and chains it through a 
 
 ```mermaid
 flowchart LR
-    A([Browser]) -->|Request| B[/api/all]
+    A([Browser]) -->|Request| B["API Route\n/api/all"]
 
-    B -->|1 Detect IP| C[(ipify.org)]
+    B -->|"1 - Detect IP"| C[(ipify.org)]
     C -->|public IP| B
 
-    B -->|2 Geolocate IP| D[(ip-api.com)]
-    D -->|city · lat · lon · ISP · timezone| B
+    B -->|"2 - Geolocate"| D[(ip-api.com)]
+    D -->|"city, lat, lon, ISP, timezone"| B
 
-    B -->|3 Parallel fetch| E & F & G
+    B -->|"3 - Parallel"| E
+    B -->|"3 - Parallel"| F
+    B -->|"3 - Parallel"| G
 
-    E[(open-meteo.com\nWeather)] -->|temp · wind · UV · 7-day forecast| B
-    F[(open-meteo.com\nAir Quality)] -->|AQI · PM2.5 · NO₂ · O₃| B
-    G[(restcountries.com)] -->|flag · currency · population| B
+    E[(open-meteo Weather)] -->|"temp, wind, UV, forecast"| B
+    F[(open-meteo Air Quality)] -->|"AQI, PM2.5, NO2, O3"| B
+    G[(restcountries.com)] -->|"flag, currency, population"| B
 
     B -->|Combined JSON| A
 ```
